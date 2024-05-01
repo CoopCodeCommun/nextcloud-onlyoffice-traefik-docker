@@ -29,9 +29,6 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=frontend
-      - traefik.http.routers.nextcloud_front.tls.certresolver=myresolver
-      - traefik.http.routers.nextcloud_front.rule=Host(`$DOMAIN`) 
-      - traefik.http.services.nextcloud_front.loadbalancer.server.port=80
 
       - traefik.http.routers.nextcloud_front.middlewares=nextcloud_front,nextcloud_front_redirect
       - traefik.http.middlewares.nextcloud_front.headers.customFrameOptionsValue=ALLOW
@@ -43,9 +40,12 @@ services:
       - traefik.http.middlewares.nextcloud_front.headers.customresponseheaders.X-Frame-Options=SAMEORIGIN
 
       - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.permanent=true
-      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav
-      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.replacement=https://$${1}/remote.php/dav
+      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=https://nuage2.tierslieux.re/.well-known/(?:card|cal)dav
+      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.replacement=https://nuage2.tierslieux.re/remote.php/dav
 
+      - traefik.http.routers.nextcloud_front.tls.certresolver=myresolver
+      - traefik.http.routers.nextcloud_front.rule=Host(`nuage2.tierslieux.re`) 
+      - traefik.http.services.nextcloud_front.loadbalancer.server.port=80
 
 
 networks:
