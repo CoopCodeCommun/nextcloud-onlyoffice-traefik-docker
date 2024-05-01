@@ -44,8 +44,8 @@ services:
       - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.permanent=true
 
       # Pour traefik 1
-      # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=/.well-known/(card|cal)dav
-      # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.replacement=/remote.php/dav/
+      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=/.well-known/(card|cal)dav
+      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.replacement=/remote.php/dav/
 
 
       # Pour traefik > v2
