@@ -41,7 +41,6 @@ services:
       - traefik.http.middlewares.nextcloud_front.headers.stsPreload=true
       - traefik.http.middlewares.nextcloud_front.headers.accesscontrolalloworigin=*
       - traefik.http.middlewares.nextcloud_front.headers.customresponseheaders.X-Frame-Options=SAMEORIGIN
-      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.permanent=true
 
       # Pour traefik 1
       - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=/.well-known/(card|cal)dav
@@ -51,6 +50,7 @@ services:
       # Pour traefik > v2
       # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav
       # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.replacement=https://$${1}/remote.php/dav
+      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.permanent=true
 
 
 
@@ -85,3 +85,6 @@ networks:
 # - Aller sur le serveur, lancer le bouzin et copier la clé
 # - Dans l'admin de nextcloud -> Onlyoffice -> copier la clé secret
 # - Enregistrer, le popup vert s'affiche
+
+
+# Assurez-vous de configurer un utilisateur administratif pouvant accéder à l'instance par authentification unique (SSO). La connexion avec votre compte Nextcloud normal ne sera plus possible, à moins que vous vous rendiez directement à l'adresse http://nuage2.tierslieux.re/login?direct=1. 
