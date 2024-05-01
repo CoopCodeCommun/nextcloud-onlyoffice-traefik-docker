@@ -42,15 +42,11 @@ services:
       - traefik.http.middlewares.nextcloud_front.headers.accesscontrolalloworigin=*
       - traefik.http.middlewares.nextcloud_front.headers.customresponseheaders.X-Frame-Options=SAMEORIGIN
 
-      # Pour traefik 1
-      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=/.well-known/(card|cal)dav
-      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.replacement=/remote.php/dav/
-
-
-      # Pour traefik > v2
-      # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav
-      # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.replacement=https://$${1}/remote.php/dav
-      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.permanent=true
+      - traefik.http.routers.nextcloud.middlewares=nextcloud_front_redirectregex
+      - traefik.http.middlewares.nextcloud_front_redirectregex.redirectregex.permanent=true
+      - traefik.http.middlewares.nextcloud_front_redirectregex.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav
+      - traefik.http.middlewares.nextcloud_front_redirectregex.redirectregex.replacement=https://$${1}/remote.php/dav
+      
 
 
 
@@ -87,4 +83,6 @@ networks:
 # - Enregistrer, le popup vert s'affiche
 
 
-# Assurez-vous de configurer un utilisateur administratif pouvant accéder à l'instance par authentification unique (SSO). La connexion avec votre compte Nextcloud normal ne sera plus possible, à moins que vous vous rendiez directement à l'adresse http://nuage2.tierslieux.re/login?direct=1. 
+# Assurez-vous de configurer un utilisateur administratif pouvant accéder à l'instance par authentification unique (SSO). 
+# La connexion avec votre compte Nextcloud normal ne sera plus possible, à moins que vous vous rendiez directement 
+# à l'adresse http://nuage2.tierslieux.re/login?direct=1. 
