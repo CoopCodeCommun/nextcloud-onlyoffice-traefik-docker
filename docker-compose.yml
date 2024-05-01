@@ -1,0 +1,87 @@
+services:
+  nextcloud_mariadb:
+    image: mariadb:10.6
+    hostname: nextcloud_mariadb
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    restart: always
+
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    networks:
+      - next_back
+
+  nextcloud_front:  
+    image: nextcloud:28
+    restart: always
+    depends_on:
+      - nextcloud_mariadb
+    volumes:
+      - ./data/html:/var/www/html
+    hostname: nextcloud_front
+    networks:
+      - frontend
+      - next_back
+
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=frontend
+      - traefik.http.routers.nextcloud_front.tls.certresolver=myresolver
+      - traefik.http.routers.nextcloud_front.rule=Host(`$DOMAIN`) 
+      - traefik.http.services.nextcloud_front.loadbalancer.server.port=80
+
+      - traefik.http.routers.nextcloud_front.middlewares=nextcloud_front,nextcloud_front_redirect
+      - traefik.http.middlewares.nextcloud_front.headers.customFrameOptionsValue=ALLOW
+      - traefik.http.middlewares.nextcloud_front.headers.contentSecurityPolicy=frame-ancestors 'self' tierslieux.re *.tierslieux.re
+      - traefik.http.middlewares.nextcloud_front.headers.stsSeconds=155520011
+      - traefik.http.middlewares.nextcloud_front.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.nextcloud_front.headers.stsPreload=true
+      - traefik.http.middlewares.nextcloud_front.headers.accesscontrolalloworigin=*
+      - traefik.http.middlewares.nextcloud_front.headers.customresponseheaders.X-Frame-Options=SAMEORIGIN
+      - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.permanent=true
+
+      # Pour traefik 1
+      # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=/.well-known/(card|cal)dav
+      # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.replacement=/remote.php/dav/
+
+
+      # Pour traefik > v2
+      # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav
+      # - traefik.http.middlewares.nextcloud_front_redirect.redirectregex.replacement=https://$${1}/remote.php/dav
+
+
+
+networks:
+  frontend:
+    external: true
+  next_back:
+
+
+# allow to set onlyoffice as local conainer
+# command: sudo -u www-data sh -c "php occ --no-warnings config:system:set allow_local_remote_servers --value=true"
+
+# docker-compose exec --user www-data nextcloud_app php occ db:add-missing-indices
+
+
+
+# allow to set onlyoffice as local conainer
+# command: sudo -u www-data sh -c "php occ --no-warnings config:system:set allow_local_remote_servers --value=true"
+
+# Exemple pour reconstruire les index après une maj :
+# docker compose exec --user www-data nextcloud_app php occ db:add-missing-indices
+
+# Scanner les fichier sur disque dur et reconstruire la base de donnée :
+# docker compose exec --user www-data nextcloud_app php occ files:scan jonas
+# docker compose exec --user www-data nextcloud_app php occ maintenance:mode --on
+
+  
+### LORS D'UN REBOOT / MAJ
+# Onlyoffice doit être relié via le token.
+#  - aller sur https://onlyoffice.3peaks.re/
+# - compier la commande sudo docker exec blabla
+# - Aller sur le serveur, lancer le bouzin et copier la clé
+# - Dans l'admin de nextcloud -> Onlyoffice -> copier la clé secret
+# - Enregistrer, le popup vert s'affiche
