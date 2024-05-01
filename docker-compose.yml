@@ -42,11 +42,10 @@ services:
       - traefik.http.middlewares.nextcloud_front.headers.accesscontrolalloworigin=*
       - traefik.http.middlewares.nextcloud_front.headers.customresponseheaders.X-Frame-Options=SAMEORIGIN
 
-      - traefik.http.routers.nextcloud.middlewares=nextcloud_front_redirectregex
+      - traefik.http.routers.nextcloud_front.middlewares=nextcloud_front_redirectregex
       - traefik.http.middlewares.nextcloud_front_redirectregex.redirectregex.permanent=true
       - traefik.http.middlewares.nextcloud_front_redirectregex.redirectregex.regex=https://(.*)/.well-known/(?:card|cal)dav
       - traefik.http.middlewares.nextcloud_front_redirectregex.redirectregex.replacement=https://$${1}/remote.php/dav
-      
 
 
 
